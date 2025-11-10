@@ -4,197 +4,66 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>DNS_Solver • IITD Network & DNS Fix</title>
-<meta name="description" content="Self-help tool for IIT Delhi students to diagnose and fix IITD Wi-Fi & DNS issues interactively on Windows, macOS, or Linux." />
+<meta name="description" content="Interactive guide for IIT Delhi students to diagnose and fix IITD Wi-Fi & DNS issues on Windows, macOS, or Linux." />
 <style>
 :root {
-  --brand: #2563eb;
-  --brand-light: #dbeafe;
-  --ok: #16a34a;
-  --warn: #f59e0b;
-  --err: #ef4444;
-  --text: #1e293b;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --bg: #f8fafc;
-  --panel: #fff;
-  --r: 16px;
-  --shadow: 0 6px 25px rgba(0,0,0,.08);
+  --brand:#2563eb;
+  --brand-light:#dbeafe;
+  --ok:#16a34a;
+  --warn:#f59e0b;
+  --err:#ef4444;
+  --text:#1e293b;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --bg:#f8fafc;
+  --panel:#fff;
+  --r:16px;
+  --shadow:0 6px 25px rgba(0,0,0,.08);
 }
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter',system-ui,-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
 
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  line-height: 1.6;
-  overflow-x: hidden;
-}
+/* popup */
+#os-popup{position:fixed;inset:0;background:rgba(255,255,255,.7);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;animation:fadeIn .4s ease;z-index:999}
+@keyframes fadeIn{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.os-box{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);padding:40px 30px;text-align:center;max-width:400px}
+.os-box h1{color:var(--brand);margin-bottom:10px;font-size:28px}
+.os-buttons{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.os-btn{background:var(--brand);color:#fff;border:none;border-radius:12px;padding:12px;font-size:16px;font-weight:600;cursor:pointer;transition:.15s ease}
+.os-btn:hover{background:#1d4ed8;transform:translateY(-2px)}
 
-/* -------- OS POPUP -------- */
-#os-popup {
-  position: fixed;
-  inset: 0;
-  background: rgba(255,255,255,0.7);
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  animation: fadeIn 0.4s ease;
-}
-@keyframes fadeIn {
-  from {opacity:0; transform:scale(0.97);}
-  to {opacity:1; transform:scale(1);}
-}
-.os-box {
-  background: var(--panel);
-  border-radius: 20px;
-  box-shadow: var(--shadow);
-  padding: 40px 30px;
-  text-align: center;
-  max-width: 400px;
-  border: 1px solid var(--line);
-}
-.os-box h1 {
-  margin-bottom: 20px;
-  font-size: 28px;
-  color: var(--brand);
-}
-.os-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.os-btn {
-  background: var(--brand);
-  color: #fff;
-  border: none;
-  border-radius: 12px;
-  padding: 12px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.15s ease;
-}
-.os-btn:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
-}
+/* main */
+.container{max-width:1000px;margin:50px auto;padding:0 20px;opacity:0;transform:translateY(15px);transition:all .5s ease}
+.container.show{opacity:1;transform:none}
+header{background:linear-gradient(135deg,#eff6ff,#fff);border-radius:var(--r);padding:30px;text-align:center;box-shadow:var(--shadow)}
+h1{color:var(--brand);font-size:30px;margin:0 0 8px}
+.sub{color:var(--muted);font-size:15px}
 
-/* -------- MAIN LAYOUT -------- */
-.container {
-  max-width: 1000px;
-  margin: 50px auto;
-  padding: 0 20px;
-  opacity: 0;
-  transform: translateY(15px);
-  transition: all 0.5s ease;
-}
-.container.show {
-  opacity: 1;
-  transform: none;
-}
-
-header {
-  text-align: center;
-  background: linear-gradient(135deg, #eff6ff, #ffffff);
-  border-radius: var(--r);
-  padding: 30px;
-  box-shadow: var(--shadow);
-}
-h1 {
-  font-size: 32px;
-  color: var(--brand);
-  margin: 0;
-}
-.sub { color: var(--muted); }
-
-.card {
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: var(--r);
-  box-shadow: var(--shadow);
-  padding: 22px;
-  margin-top: 30px;
-}
-
-.btn {
-  background: var(--brand);
-  color: #fff;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: .15s ease;
-}
-.btn:hover {
-  background: #1d4ed8;
-  transform: translateY(-2px);
-}
-
-.status {
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:13px;padding:6px 10px;
-  border:1px solid var(--line);border-radius:999px;
-  background:#f1f5f9;color:var(--muted);
-}
-
-.code-wrap {position:relative;margin:10px 0;}
-.copy {
-  position:absolute;top:8px;right:8px;
-  background:var(--brand);
-  color:#fff;border:none;
-  border-radius:8px;padding:6px 10px;
-  font-size:12px;cursor:pointer;transition:.15s ease;
-}
-.copy:hover{background:#1d4ed8;}
-code {
-  display:block;
-  background:#f1f5f9;
-  border:1px solid var(--line);
-  color:#0f172a;
-  padding:14px;
-  border-radius:12px;
-  font-family:ui-monospace,Menlo,Consolas,monospace;
-  font-size:13px;
-  overflow:auto;
-}
-.callout {
-  border-left:4px solid var(--brand);
-  background:#f8fafc;
-  padding:12px 14px;
-  border-radius:12px;
-  margin:10px 0;
-}
-.callout.ok {border-left-color: var(--ok);}
-.callout.warn {border-left-color: var(--warn);}
-.callout.err {border-left-color: var(--err);}
-.kbd {
-  background:#f1f5f9;
-  border:1px solid var(--line);
-  border-radius:6px;
-  padding:2px 6px;
-  font-size:12.5px;
-  font-family:monospace;
-}
-
-footer {
-  text-align:center;
-  color:var(--muted);
-  margin:40px 0;
-  font-size:13px;
-}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:24px;margin-top:30px}
+h2{color:var(--brand);margin-top:0}
+.callout{border-left:4px solid var(--brand);background:#f8fafc;padding:12px 14px;border-radius:12px;margin:12px 0}
+.callout.ok{border-left-color:var(--ok)}
+.callout.warn{border-left-color:var(--warn)}
+.callout.err{border-left-color:var(--err)}
+.list{padding-left:22px;margin:10px 0}
+.list li{margin:5px 0}
+.kbd{background:#f1f5f9;border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:12.5px;font-family:monospace}
+.btn{background:var(--brand);color:#fff;padding:10px 16px;border:none;border-radius:10px;font-weight:600;cursor:pointer;transition:.15s ease}
+.btn:hover{background:#1d4ed8;transform:translateY(-2px)}
+.code-wrap{position:relative;margin:10px 0}
+.copy{position:absolute;top:8px;right:8px;background:var(--brand);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:12px;cursor:pointer;transition:.15s ease}
+.copy:hover{background:#1d4ed8}
+code{display:block;background:#f1f5f9;border:1px solid var(--line);color:#0f172a;padding:14px;border-radius:12px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;overflow:auto}
+footer{text-align:center;color:var(--muted);margin:40px 0;font-size:13px}
 </style>
 </head>
 <body>
 
-<!-- ======== OS POPUP ======== -->
+<!-- OS Selection -->
 <div id="os-popup">
   <div class="os-box">
     <h1>Select Your OS</h1>
-    <p style="color:var(--muted);margin-bottom:20px;">Choose your operating system to begin fixing IITD DNS issues.</p>
+    <p style="color:var(--muted)">Choose your operating system to start DNS troubleshooting.</p>
     <div class="os-buttons">
       <button class="os-btn" data-os="win">💻 Windows</button>
       <button class="os-btn" data-os="mac">🍎 macOS</button>
@@ -203,33 +72,38 @@ footer {
   </div>
 </div>
 
-<!-- ======== MAIN CONTENT ======== -->
 <div class="container" id="main">
   <header>
     <h1>DNS_Solver — IITD Network & DNS Fix</h1>
-    <p class="sub">Diagnose and repair DNS issues on IIT Delhi Wi-Fi for your selected OS.</p>
+    <p class="sub">Fix situations where IITD internal sites (Moodle, Webmail, E-academics) don’t open, but Google does.</p>
   </header>
 
-  <section class="card" id="content">
-    <!-- dynamic OS content will be injected here -->
-  </section>
+  <section class="card" id="content"></section>
 
-  <footer>© <span id="year"></span> DNS_Solver · Built by Aman (IIT Delhi)</footer>
+  <footer>© <span id="year"></span> DNS_Solver · Built by Aman (IIT Delhi) — Helping students stay connected.</footer>
 </div>
 
 <script>
-const osPopup = document.getElementById('os-popup');
-const container = document.getElementById('main');
-const content = document.getElementById('content');
+const popup=document.getElementById('os-popup');
+const container=document.getElementById('main');
+const content=document.getElementById('content');
 
-const osData = {
-  win: `
-    <h2>🪟 Windows DNS Fix</h2>
-    <div class="callout ok"><strong>Step 1:</strong> Check DNS Servers</div>
-    <div class="code-wrap"><button class="copy" data-copy="netsh interface ip show dns">Copy</button><pre><code>netsh interface ip show dns</code></pre></div>
+const guide={
+win:`
+  <h2>💻 Windows — Complete DNS Troubleshooting</h2>
+  <div class="callout warn"><strong>Symptom:</strong> External sites (e.g., Google) open fine, but IITD sites like Moodle or Webmail don’t. This means your DNS is pointing to a public resolver such as 8.8.8.8 or 1.1.1.1 instead of IITD internal DNS.</div>
 
-    <div class="callout warn"><strong>Step 2:</strong> Reset to Automatic (DHCP)</div>
-    <div class="code-wrap"><button class="copy" data-copy='netsh interface ip set address "Wi-Fi" dhcp
+  <div class="callout ok"><strong>Step 1:</strong> Check Current DNS Servers</div>
+  <p>Open <span class="kbd">CMD</span> and run:</p>
+  <div class="code-wrap"><button class="copy" data-copy="netsh interface ip show dns">Copy</button><pre><code>netsh interface ip show dns</code></pre></div>
+  <ul class="list">
+    <li>✅ Correct DNS: 10.10.1.4, 10.10.1.5, 10.10.2.2</li>
+    <li>❌ Wrong DNS: 8.8.8.8, 1.1.1.1, etc. (Public DNS — will block IITD internal sites)</li>
+  </ul>
+
+  <div class="callout warn"><strong>Step 2:</strong> Reset to Automatic (DHCP)</div>
+  <p><strong>Paste one line at a time</strong> in CMD and press Enter after each:</p>
+  <div class="code-wrap"><button class="copy" data-copy='netsh interface ip set address "Wi-Fi" dhcp
 netsh interface ip set dns "Wi-Fi" dhcp
 ipconfig /flushdns
 ipconfig /release
@@ -239,17 +113,36 @@ ipconfig /flushdns
 ipconfig /release
 ipconfig /renew</code></pre></div>
 
-    <div class="callout ok"><strong>Step 3:</strong> Verify Connection</div>
-    <div class="code-wrap"><button class="copy" data-copy='ping moodlenew.iitd.ac.in'>Copy</button><pre><code>ping moodlenew.iitd.ac.in</code></pre></div>
-    <p class="sub">If Moodle loads fine afterward, your DNS is fixed!</p>
-  `,
-  mac: `
-    <h2>🍎 macOS DNS Fix</h2>
-    <div class="callout ok"><strong>Step 1:</strong> Check DNS Servers</div>
-    <div class="code-wrap"><button class="copy" data-copy="networksetup -getdnsservers Wi-Fi">Copy</button><pre><code>networksetup -getdnsservers Wi-Fi</code></pre></div>
+  <div class="callout ok"><strong>Step 3:</strong> Verify DNS Fix</div>
+  <div class="code-wrap"><button class="copy" data-copy='netsh interface ip show dns
+ping moodlenew.iitd.ac.in
+curl -Iv https://moodlenew.iitd.ac.in
+nslookup moodlenew.iitd.ac.in
+tracert moodlenew.iitd.ac.in'>Copy</button><pre><code>netsh interface ip show dns
+ping moodlenew.iitd.ac.in
+curl -Iv https://moodlenew.iitd.ac.in
+nslookup moodlenew.iitd.ac.in
+tracert moodlenew.iitd.ac.in</code></pre></div>
 
-    <div class="callout warn"><strong>Step 2:</strong> Reset to DHCP & Clear Cache</div>
-    <div class="code-wrap"><button class="copy" data-copy='networksetup -setdhcp Wi-Fi
+  <div class="callout ok">If <span class="kbd">ping</span> or <span class="kbd">curl</span> succeeds, your connection is fixed. If not, disconnect and reconnect Wi-Fi or restart.</div>
+  <div class="callout warn">Disable any VPNs before running these tests.</div>
+  <div class="callout err">Still broken? Email <span class="kbd">netadm@cc.iitd.ac.in</span> with IP, MAC, and screenshots of the commands above.</div>
+`,
+mac:`
+  <h2>🍎 macOS — Complete DNS Troubleshooting</h2>
+  <div class="callout warn"><strong>Symptom:</strong> IITD internal sites fail but external ones work → wrong DNS configuration.</div>
+
+  <div class="callout ok"><strong>Step 1:</strong> Check DNS Servers</div>
+  <p>Run this in Terminal:</p>
+  <div class="code-wrap"><button class="copy" data-copy="networksetup -getdnsservers Wi-Fi">Copy</button><pre><code>networksetup -getdnsservers Wi-Fi</code></pre></div>
+  <ul class="list">
+    <li>✅ Correct: 10.10.1.4 / 10.10.1.5 / 10.10.2.2</li>
+    <li>❌ Wrong: public DNS like 8.8.8.8 / 1.1.1.1</li>
+  </ul>
+
+  <div class="callout warn"><strong>Step 2:</strong> Reset to Automatic (DHCP) and Clear Cache</div>
+  <p><strong>Run each command one line at a time</strong> in Terminal:</p>
+  <div class="code-wrap"><button class="copy" data-copy='networksetup -setdhcp Wi-Fi
 networksetup -setdnsservers Wi-Fi empty
 sudo dscacheutil -flushcache
 sudo killall -HUP mDNSResponder'>Copy</button><pre><code>networksetup -setdhcp Wi-Fi
@@ -257,16 +150,29 @@ networksetup -setdnsservers Wi-Fi empty
 sudo dscacheutil -flushcache
 sudo killall -HUP mDNSResponder</code></pre></div>
 
-    <div class="callout ok"><strong>Step 3:</strong> Test Access</div>
-    <div class="code-wrap"><button class="copy" data-copy='ping -c 4 moodlenew.iitd.ac.in'>Copy</button><pre><code>ping -c 4 moodlenew.iitd.ac.in</code></pre></div>
-  `,
-  linux: `
-    <h2>🐧 Linux DNS Fix</h2>
-    <div class="callout ok"><strong>Step 1:</strong> Check DNS</div>
-    <div class="code-wrap"><button class="copy" data-copy="nmcli dev show | grep DNS">Copy</button><pre><code>nmcli dev show | grep DNS</code></pre></div>
+  <div class="callout ok"><strong>Step 3:</strong> Verify</div>
+  <div class="code-wrap"><button class="copy" data-copy='ping -c 4 moodlenew.iitd.ac.in
+curl -Iv https://moodlenew.iitd.ac.in
+nslookup moodlenew.iitd.ac.in'>Copy</button><pre><code>ping -c 4 moodlenew.iitd.ac.in
+curl -Iv https://moodlenew.iitd.ac.in
+nslookup moodlenew.iitd.ac.in</code></pre></div>
+  <div class="callout ok">If it connects, DNS fixed. Toggle Wi-Fi off/on for best results.</div>
+  <div class="callout err">Still not working? Email <span class="kbd">netadm@cc.iitd.ac.in</span> with outputs.</div>
+`,
+linux:`
+  <h2>🐧 Linux — Complete DNS Troubleshooting</h2>
+  <div class="callout warn"><strong>Symptom:</strong> IITD sites unreachable though external sites load → DNS override in NetworkManager or /etc/resolv.conf.</div>
 
-    <div class="callout warn"><strong>Step 2:</strong> Reset via NetworkManager</div>
-    <div class="code-wrap"><button class="copy" data-copy='nmcli con show --active
+  <div class="callout ok"><strong>Step 1:</strong> Check Current DNS</div>
+  <div class="code-wrap"><button class="copy" data-copy="nmcli dev show | grep DNS">Copy</button><pre><code>nmcli dev show | grep DNS</code></pre></div>
+  <ul class="list">
+    <li>✅ Correct: 10.10.x.x</li>
+    <li>❌ Wrong: 8.8.8.8 / 1.1.1.1</li>
+  </ul>
+
+  <div class="callout warn"><strong>Step 2:</strong> Reset to Auto DNS</div>
+  <p><strong>Run each line one by one</strong> in Terminal:</p>
+  <div class="code-wrap"><button class="copy" data-copy='nmcli con show --active
 nmcli con mod "<NAME>" ipv4.ignore-auto-dns no
 nmcli con mod "<NAME>" ipv4.dns ""
 nmcli con down "<NAME>" && nmcli con up "<NAME>"'>Copy</button><pre><code>nmcli con show --active
@@ -274,49 +180,46 @@ nmcli con mod "<NAME>" ipv4.ignore-auto-dns no
 nmcli con mod "<NAME>" ipv4.dns ""
 nmcli con down "<NAME>" && nmcli con up "<NAME>"</code></pre></div>
 
-    <div class="callout ok"><strong>Step 3:</strong> Verify</div>
-    <div class="code-wrap"><button class="copy" data-copy='ping -c 4 moodlenew.iitd.ac.in'>Copy</button><pre><code>ping -c 4 moodlenew.iitd.ac.in</code></pre></div>
-  `
+  <div class="callout ok"><strong>Step 3:</strong> Verify</div>
+  <div class="code-wrap"><button class="copy" data-copy='ping -c 4 moodlenew.iitd.ac.in
+curl -Iv https://moodlenew.iitd.ac.in
+nslookup moodlenew.iitd.ac.in'>Copy</button><pre><code>ping -c 4 moodlenew.iitd.ac.in
+curl -Iv https://moodlenew.iitd.ac.in
+nslookup moodlenew.iitd.ac.in</code></pre></div>
+
+  <div class="callout warn">Restart Wi-Fi if needed. Disable VPNs that override DNS.</div>
+  <div class="callout err">Still broken? Contact <span class="kbd">netadm@cc.iitd.ac.in</span>.</div>
+`
 };
 
 // handle OS selection
 document.querySelectorAll('.os-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    const os = btn.dataset.os;
-    localStorage.setItem('chosenOS', os);
-    showMain(os);
+    const os=btn.dataset.os;
+    localStorage.setItem('chosenOS',os);
+    showGuide(os);
   });
 });
-
-// show relevant content
-function showMain(os){
-  osPopup.style.display='none';
+function showGuide(os){
+  popup.style.display='none';
   container.classList.add('show');
-  content.innerHTML = osData[os] || '<p>No data found.</p>';
-  addCopyHandlers();
+  content.innerHTML=guide[os];
+  bindCopy();
 }
+const saved=localStorage.getItem('chosenOS');
+if(saved){popup.style.display='none';container.classList.add('show');content.innerHTML=guide[saved];bindCopy();}
 
-// restore choice if exists
-const savedOS = localStorage.getItem('chosenOS');
-if(savedOS){
-  osPopup.style.display='none';
-  container.classList.add('show');
-  content.innerHTML = osData[savedOS];
-  addCopyHandlers();
-}
-
-// copy buttons
-function addCopyHandlers(){
+function bindCopy(){
   document.querySelectorAll('.copy').forEach(btn=>{
-    btn.addEventListener('click', async ()=>{
-      const txt = btn.getAttribute('data-copy');
+    btn.addEventListener('click',async()=>{
+      const txt=btn.getAttribute('data-copy');
       await navigator.clipboard.writeText(txt);
-      const old=btn.textContent; btn.textContent='Copied!'; btn.style.background='#16a34a';
-      setTimeout(()=>{btn.textContent='Copy'; btn.style.background='var(--brand)';},1000);
+      const old=btn.textContent;
+      btn.textContent='Copied!';btn.style.background='#16a34a';
+      setTimeout(()=>{btn.textContent='Copy';btn.style.background='var(--brand)';},1000);
     });
   });
 }
-
 document.getElementById('year').textContent=new Date().getFullYear();
 </script>
 </body>
